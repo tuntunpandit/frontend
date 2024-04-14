@@ -6,7 +6,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../auth.service';
-import { LoginFormData } from '../auth.model';
+import { LoginData, LoginFormData } from '../auth.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,7 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   authService = inject(AuthService);
   fb = inject(FormBuilder);
+  router = inject(Router);
 
   ngOnInit(): void {
     this.initializeForm();
@@ -37,8 +39,12 @@ export class LoginComponent implements OnInit {
     }
 
     this.authService.login(this.loginForm.value).subscribe({
-      next: (data: any) => {
-        console.log(data);
+      next: (data: LoginData) => {
+        if (data && data.jwt) {
+          localStorage.setItem('token', data.jwt);
+          localStorage.setItem('userInfo', JSON.stringify(data.user));
+          this.router.navigate(['/']);
+        }
       },
       error: (err: any) => {
         console.error(err.message);

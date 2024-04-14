@@ -12,7 +12,8 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   isUserLoggedin(): boolean {
-    return true;
+    const jwtToken = localStorage.getItem('token');
+    return jwtToken ? true : false;
   }
 
   login(userData: LoginFormData): Observable<LoginData> {
